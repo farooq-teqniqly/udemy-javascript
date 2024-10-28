@@ -16,7 +16,7 @@ const initializeGame = (gameConfig) => {
     throw new Error("Label not found");
   }
 
-  label.innerText = labelCaption;
+  label.textContent = labelCaption;
 
   const input = document.getElementById("input-guess-number");
 
@@ -34,5 +34,5 @@ const initializeGame = (gameConfig) => {
     throw new Error("Score span not found");
   }
 
-  scoreSpan.innerText = startScore.toString();
+  scoreSpan.textContent = startScore.toString();
 };
