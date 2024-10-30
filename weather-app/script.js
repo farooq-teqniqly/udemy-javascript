@@ -3,17 +3,25 @@
 const LIMIT = 1;
 let API_KEY = "";
 
+const apiErrorsEl = document.getElementById("api-errors");
+apiErrorsEl.replaceChildren();
+
 fetch("env.json")
   .then((response) => response.json())
   .then((env) => {
     API_KEY = env.API_KEY;
   })
   .catch((error) => {
-    throw Error(`Error loading environment variables: ${error}`);
+    appendApiError(apiErrorsEl, "Could not get weather from weather service.");
+    console.error(`Error loading environment variables: ${error}`);
   })
   .finally(() => {
     if (!API_KEY) {
-      throw Error("API_KEY is not defined");
+      appendApiError(
+        apiErrorsEl,
+        "Could not get weather from weather service.",
+      );
+      console.error("API_KEY is not defined");
     }
   });
 
@@ -21,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const getWeatherButton = document.getElementById("button-get-weather");
 
   getWeatherButton.addEventListener("click", () => {
-    const validationErrors = document.getElementById("validation-errors");
-    validationErrors.replaceChildren();
+    const validationErrorsEl = document.getElementById("validation-errors");
+    validationErrorsEl.replaceChildren();
 
     const inputs = {
       city: document.getElementById("input-city"),
@@ -30,15 +38,15 @@ document.addEventListener("DOMContentLoaded", () => {
       country: document.getElementById("input-country"),
     };
 
-    for (let key in inputs) {
-      if (inputs[key].value.trim().length === 0) {
-        const p = document.createElement("p");
-        p.textContent = inputs[key].getAttribute("placeholder");
-        validationErrors.appendChild(p);
-      }
-    }
+    const validationErrors = validateInputs(inputs);
 
-    if (validationErrors.hasChildNodes()) {
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((e) => {
+        const p = document.createElement("p");
+        p.textContent = e;
+        validationErrorsEl.appendChild(p);
+      });
+
       return;
     }
 
@@ -50,7 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
       apiKey: API_KEY,
     };
 
-    getGeocode(params);
+    getGeocode(params).then((data) => {
+      console.log(data);
+    });
   });
 });
 
@@ -65,9 +75,46 @@ const getGeocode = (params) => {
 
   const url = buildGeoCodeUrl(params);
 
-  fetch(url)
-    .then((res) => res.json())
+  return fetch(url)
+    .then((res) => {
+      if (res.status !== 200) {
+        appendApiError(
+          apiErrorsEl,
+          `Could not get weather from weather service. Error: ${res.statusText}`,
+        );
+        console.error(res);
+        return;
+      }
+
+      return res.json();
+    })
     .then((data) => {
-      console.log(data);
+      return data;
+    })
+    .catch((error) => {
+      appendApiError(
+        apiErrorsEl,
+        `Could not get weather from weather service. Error: ${error}`,
+      );
+      console.error(error);
     });
+};
+
+const validateInputs = (inputs) => {
+  const errors = [];
+
+  for (let key in inputs) {
+    if (inputs[key].value.trim().length === 0) {
+      errors.push(inputs[key].getAttribute("placeholder"));
+    }
+  }
+
+  return errors;
+};
+
+const appendApiError = (apiErrorsEl, errorMessage) => {
+  const p = document.createElement("p");
+  p.textContent = errorMessage;
+  p.classList.add("api-error");
+  apiErrorsEl.appendChild(p);
 };
