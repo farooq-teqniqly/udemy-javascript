@@ -4,35 +4,50 @@ const LIMIT = 1;
 let API_KEY = "";
 
 fetch("env.json")
-    .then(response => response.json())
-    .then(env => {
-      API_KEY = env.API_KEY;
-    })
-    .catch(error => {
-      throw Error(`Error loading environment variables: ${error}`);
-    })
-    .finally(() => {
-      if (!API_KEY) {
-        throw Error("API_KEY is not defined");
-      }
-    });
+  .then((response) => response.json())
+  .then((env) => {
+    API_KEY = env.API_KEY;
+  })
+  .catch((error) => {
+    throw Error(`Error loading environment variables: ${error}`);
+  })
+  .finally(() => {
+    if (!API_KEY) {
+      throw Error("API_KEY is not defined");
+    }
+  });
 
 document.addEventListener("DOMContentLoaded", () => {
   const getWeatherButton = document.getElementById("button-get-weather");
+
   getWeatherButton.addEventListener("click", () => {
     const cityInput = document.getElementById("input-city");
     const stateInput = document.getElementById("input-state");
     const countryInput = document.getElementById("input-country");
+    const validationErrors = document.getElementById("validation-errors");
 
-    if (!validateInputs(cityInput, stateInput, countryInput)) {
-      cityInput.classList.add("validation-error");
-      stateInput.classList.add("validation-error");
-      countryInput.classList.add("validation-error");
+    validationErrors.replaceChildren();
+
+    if (cityInput.value.trim().length === 0) {
+      const p = document.createElement("p");
+      p.textContent = cityInput.getAttribute("placeholder");
+      validationErrors.appendChild(p);
+    }
+
+    if (stateInput.value.trim().length === 0) {
+      const p = document.createElement("p");
+      p.textContent = stateInput.getAttribute("placeholder");
+      validationErrors.appendChild(p);
+    }
+
+    if (countryInput.value.trim().length === 0) {
+      const p = document.createElement("p");
+      p.textContent = countryInput.getAttribute("placeholder");
+      validationErrors.appendChild(p);
+    }
+
+    if (validationErrors.hasChildNodes()) {
       return;
-    } else {
-      cityInput.classList.remove("validation-error");
-      stateInput.classList.remove("validation-error");
-      countryInput.classList.remove("validation-error");
     }
 
     const params = {
@@ -46,6 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
     getGeocode(params);
   });
 });
+
+const validateInputs = (inputElement) => {
+  if (inputElement.value.trim().length === 0) {
+    inputElement.classList.remove("validation-error");
+    inputElement.classList.add("validation-error");
+  } else {
+    inputElement.classList.remove("validation-error");
+  }
+};
 
 const buildGeoCodeUrl = (params) => {
   return `http://api.openweathermap.org/geo/1.0/direct?q=${params.city},${params.state},${params.country}&limit=${params.limit}&appid=${params.apiKey}`;
@@ -63,25 +87,4 @@ const getGeocode = (params) => {
     .then((data) => {
       console.log(data);
     });
-};
-
-const validateInputs = (cityInput, stateInput, countryInput) => {
-  let valid = true;
-
-  if (cityInput.value.trim().length === 0) {
-    console.log("City is required.");
-    valid = false;
-  }
-
-  if (stateInput.value.trim().length === 0) {
-    console.log("State is required.");
-    valid = false;
-  }
-
-  if (countryInput.value.trim().length === 0) {
-    console.log("Country is required.");
-    valid = false;
-  }
-
-  return valid;
 };
