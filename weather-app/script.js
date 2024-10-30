@@ -6,21 +6,21 @@ let API_KEY = "";
 const apiErrorsEl = document.getElementById("api-errors");
 apiErrorsEl.replaceChildren();
 
+const COULD_NOT_GET_WEATHER_FROM_SERVICE =
+  "Could not get weather from weather service.";
+
 fetch("env.json")
   .then((response) => response.json())
   .then((env) => {
     API_KEY = env.API_KEY;
   })
   .catch((error) => {
-    appendApiError(apiErrorsEl, "Could not get weather from weather service.");
+    appendApiError(apiErrorsEl, COULD_NOT_GET_WEATHER_FROM_SERVICE);
     console.error(`Error loading environment variables: ${error}`);
   })
   .finally(() => {
     if (!API_KEY) {
-      appendApiError(
-        apiErrorsEl,
-        "Could not get weather from weather service.",
-      );
+      appendApiError(apiErrorsEl, COULD_NOT_GET_WEATHER_FROM_SERVICE);
       console.error("API_KEY is not defined");
     }
   });
