@@ -58,16 +58,41 @@ document.addEventListener("DOMContentLoaded", () => {
       apiKey: API_KEY,
     };
 
-    getGeocode(params).then((data) => {
-      console.log(data);
-    });
+    getGeocode(params)
+      .then((data) => {
+        displayGeocodeData(data[0]);
+      })
+      .catch((error) => {
+        appendApiError(
+          apiErrorsEl,
+          `Could not get weather from weather service. Error: ${error}`,
+        );
+      });
   });
 });
 
+/**
+ * Constructs a URL for the OpenWeatherMap Geocoding API.
+ *
+ * @param {Object} params - The parameters for the API request.
+ * @param {string} params.city - The name of the city.
+ * @param {string} [params.state] - The name of the state (optional).
+ * @param {string} params.country - The name of the country.
+ * @param {number} params.limit - The maximum number of results to return.
+ * @param {string} params.apiKey - The API key for authenticating the request.
+ * @returns {string} The constructed URL for the Geocoding API request.
+ */
 const buildGeoCodeUrl = (params) => {
   return `http://api.openweathermap.org/geo/1.0/direct?q=${params.city},${params.state},${params.country}&limit=${params.limit}&appid=${params.apiKey}`;
 };
 
+/**
+ * Fetches geocode data based on the provided parameters.
+ *
+ * @param {Object} params - The parameters to build the geocode request URL.
+ * @throws Will throw an error if params is null or the fetch request fails.
+ * @returns {Promise<Object>} A promise that resolves to the geocode data in JSON format.
+ */
 const getGeocode = (params) => {
   if (!params) {
     throw Error("Params is null");
@@ -78,12 +103,10 @@ const getGeocode = (params) => {
   return fetch(url)
     .then((res) => {
       if (res.status !== 200) {
-        appendApiError(
-          apiErrorsEl,
+        console.error(res);
+        throw new Error(
           `Could not get weather from weather service. Error: ${res.statusText}`,
         );
-        console.error(res);
-        return;
       }
 
       return res.json();
@@ -92,14 +115,26 @@ const getGeocode = (params) => {
       return data;
     })
     .catch((error) => {
-      appendApiError(
-        apiErrorsEl,
-        `Could not get weather from weather service. Error: ${error}`,
-      );
       console.error(error);
+      throw new Error(error);
     });
 };
 
+/**
+ * Validates a set of input fields to check for any empty values.
+ *
+ * This function iterates through each input in the provided inputs object
+ * and checks if the value is an empty string after trimming whitespace.
+ * If an input is found to be empty, its placeholder attribute is added to
+ * the errors array.
+ *
+ * @param {Object} inputs - An object where each key is an identifier for
+ * an input field, and the value is an input element with at least
+ * the properties `value` and `getAttribute`.
+ *
+ * @returns {Array<string>} An array of placeholder strings corresponding
+ * to input fields that have empty values.
+ */
 const validateInputs = (inputs) => {
   const errors = [];
 
@@ -112,9 +147,66 @@ const validateInputs = (inputs) => {
   return errors;
 };
 
+/**
+ * Appends an API error message to the specified DOM element.
+ *
+ * @param {HTMLElement} apiErrorsEl - The DOM element to which the error message will be appended.
+ * @param {string} errorMessage - The error message text to display.
+ */
 const appendApiError = (apiErrorsEl, errorMessage) => {
   const p = document.createElement("p");
   p.textContent = errorMessage;
   p.classList.add("api-error");
   apiErrorsEl.appendChild(p);
+};
+
+/**
+ * Displays geocode data by updating the DOM element with geocode information.
+ * Logs the provided data to the console.
+ * Throws an error if the provided data is undefined.
+ * Retrieves the 'geocode-information' element from the DOM, clears its children,
+ * and updates it with location details including coordinates if they are valid numbers.
+ *
+ * @param {Object} data - The geocode data to display.
+ * @param {string} data.lat - The latitude of the location.
+ * @param {string} data.lon - The longitude of the location.
+ * @param {string} data.name - The name of the location.
+ * @param {string} data.state - The state of the location.
+ * @param {string} data.country - The country of the location.
+ */
+const displayGeocodeData = (data) => {
+  console.log(data);
+
+  if (!data) {
+    throw new Error("Data provided was undefined.");
+  }
+
+  const geocodeDiv = document.getElementById("geocode-information");
+  geocodeDiv.replaceChildren();
+
+  let showCoordinates = true;
+
+  const lat = parseFloat(data["lat"]);
+  const long = parseFloat(data["lon"]);
+
+  if (isNaN(lat)) {
+    console.warn("Got NaN for latitude.");
+    showCoordinates = false;
+  }
+
+  if (isNaN(long)) {
+    console.warn("Got NaN for longitude.");
+    showCoordinates = false;
+  }
+
+  let header = `Weather for ${data["name"]}, ${data["state"]}, ${data["country"]}`;
+
+  if (showCoordinates) {
+    header += ` (${lat.toFixed(2)}, ${long.toFixed(2)}):`;
+  }
+
+  const p = document.createElement("p");
+  p.textContent = header;
+
+  geocodeDiv.appendChild(p);
 };
