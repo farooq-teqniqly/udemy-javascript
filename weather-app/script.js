@@ -1,7 +1,21 @@
 "use strict";
 
-const API_KEY = "0bfd9c8ec382ac598e201a033426f6ef";
 const LIMIT = 1;
+let API_KEY = "";
+
+fetch("env.json")
+    .then(response => response.json())
+    .then(env => {
+      API_KEY = env.API_KEY;
+    })
+    .catch(error => {
+      throw Error(`Error loading environment variables: ${error}`);
+    })
+    .finally(() => {
+      if (!API_KEY) {
+        throw Error("API_KEY is not defined");
+      }
+    });
 
 document.addEventListener("DOMContentLoaded", () => {
   const getWeatherButton = document.getElementById("button-get-weather");
