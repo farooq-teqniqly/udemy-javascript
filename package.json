@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "mountebank": "^2.9.1",
     "prettier": "3.3.3"
   }
 }

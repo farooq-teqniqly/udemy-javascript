@@ -1,0 +1,45 @@
+﻿{
+  "port": 4000,
+  "protocol": "http",
+  "stubs": [
+    {
+      "predicates": [
+        {
+          "equals": { "method": "GET", "path": "/weather" }
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": { "Content-Type": "application/json" },
+            "body": {
+              "cities": [
+                { "name": "New York", "temperature": 68, "unit": "F" },
+                { "name": "Los Angeles", "temperature": 77, "unit": "F" },
+                { "name": "Chicago", "temperature": 59, "unit": "F" },
+                { "name": "Houston", "temperature": 86, "unit": "F" },
+                { "name": "Phoenix", "temperature": 95, "unit": "F" },
+                { "name": "Philadelphia", "temperature": 64, "unit": "F" },
+                { "name": "San Antonio", "temperature": 82, "unit": "F" },
+                { "name": "San Diego", "temperature": 72, "unit": "F" },
+                { "name": "Dallas", "temperature": 81, "unit": "F" },
+                { "name": "San Jose", "temperature": 75, "unit": "F" },
+                { "name": "Austin", "temperature": 84, "unit": "F" },
+                { "name": "Jacksonville", "temperature": 88, "unit": "F" },
+                { "name": "Fort Worth", "temperature": 79, "unit": "F" },
+                { "name": "Columbus", "temperature": 61, "unit": "F" },
+                { "name": "Charlotte", "temperature": 73, "unit": "F" },
+                { "name": "San Francisco", "temperature": 66, "unit": "F" },
+                { "name": "Indianapolis", "temperature": 63, "unit": "F" },
+                { "name": "Seattle", "temperature": 57, "unit": "F" },
+                { "name": "Denver", "temperature": 54, "unit": "F" },
+                { "name": "Washington", "temperature": 69, "unit": "F" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
