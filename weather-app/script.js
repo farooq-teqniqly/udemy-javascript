@@ -21,29 +21,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const getWeatherButton = document.getElementById("button-get-weather");
 
   getWeatherButton.addEventListener("click", () => {
-    const cityInput = document.getElementById("input-city");
-    const stateInput = document.getElementById("input-state");
-    const countryInput = document.getElementById("input-country");
     const validationErrors = document.getElementById("validation-errors");
-
     validationErrors.replaceChildren();
 
-    if (cityInput.value.trim().length === 0) {
-      const p = document.createElement("p");
-      p.textContent = cityInput.getAttribute("placeholder");
-      validationErrors.appendChild(p);
-    }
+    const inputs = {
+      city: document.getElementById("input-city"),
+      state: document.getElementById("input-state"),
+      country: document.getElementById("input-country"),
+    };
 
-    if (stateInput.value.trim().length === 0) {
-      const p = document.createElement("p");
-      p.textContent = stateInput.getAttribute("placeholder");
-      validationErrors.appendChild(p);
-    }
-
-    if (countryInput.value.trim().length === 0) {
-      const p = document.createElement("p");
-      p.textContent = countryInput.getAttribute("placeholder");
-      validationErrors.appendChild(p);
+    for (let key in inputs) {
+      if (inputs[key].value.trim().length === 0) {
+        const p = document.createElement("p");
+        p.textContent = inputs[key].getAttribute("placeholder");
+        validationErrors.appendChild(p);
+      }
     }
 
     if (validationErrors.hasChildNodes()) {
@@ -51,9 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const params = {
-      city: cityInput.value,
-      state: stateInput.value,
-      country: countryInput.value,
+      city: inputs["city"].value,
+      state: inputs["state"].value,
+      country: inputs["country"].value,
       limit: LIMIT,
       apiKey: API_KEY,
     };
@@ -61,15 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
     getGeocode(params);
   });
 });
-
-const validateInputs = (inputElement) => {
-  if (inputElement.value.trim().length === 0) {
-    inputElement.classList.remove("validation-error");
-    inputElement.classList.add("validation-error");
-  } else {
-    inputElement.classList.remove("validation-error");
-  }
-};
 
 const buildGeoCodeUrl = (params) => {
   return `http://api.openweathermap.org/geo/1.0/direct?q=${params.city},${params.state},${params.country}&limit=${params.limit}&appid=${params.apiKey}`;
