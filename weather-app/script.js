@@ -59,8 +59,21 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     getGeocode(params)
-      .then((data) => {
-        displayGeocodeData(data[0]);
+      .then((geocodeData) => {
+        displayGeocodeData(geocodeData[0]);
+
+        const weatherParams = {
+          lat: geocodeData[0]["lat"],
+          lon: geocodeData[0]["lon"],
+          units: "imperial",
+          appId: API_KEY,
+        };
+
+        return getWeather(weatherParams);
+      })
+      .then((weatherData) => {
+        console.log(weatherData);
+        displayWeatherData(weatherData);
       })
       .catch((error) => {
         appendApiError(
@@ -99,6 +112,45 @@ const getGeocode = (params) => {
   }
 
   const url = buildGeoCodeUrl(params);
+
+  return fetch(url)
+    .then((res) => {
+      if (res.status !== 200) {
+        console.error(res);
+        throw new Error(
+          `Could not get weather from weather service. Error: ${res.statusText}`,
+        );
+      }
+
+      return res.json();
+    })
+    .then((data) => {
+      return data;
+    })
+    .catch((error) => {
+      console.error(error);
+      throw new Error(error);
+    });
+};
+
+const buildWeatherUrl = (params) => {
+  return `http://localhost:4001/data/2.5/weather?lat=${params.lat}&lon=${params.lon}&units=${params.units}&appid=${params.appId}`;
+};
+
+/**
+ * Fetches weather data from a weather service.
+ *
+ * @param {Object} params - The parameters required to build the weather URL.
+ * @throws Will throw an error if `params` is null.
+ * @throws Will throw an error if the response status is not 200.
+ * @returns {Promise<Object>} - A promise that resolves to weather data in JSON format.
+ */
+const getWeather = (params) => {
+  if (!params) {
+    throw Error("Params is null");
+  }
+
+  const url = buildWeatherUrl(params);
 
   return fetch(url)
     .then((res) => {
@@ -209,4 +261,57 @@ const displayGeocodeData = (data) => {
   p.textContent = header;
 
   geocodeDiv.appendChild(p);
+};
+
+/**
+ * Displays weather data by updating the contents of a specific DOM element with the
+ * provided weather information. Expects the data parameter to contain properties for
+ * temperature (`data.main.temp`), feels-like temperature (`data.main.feels_like`),
+ * and wind speed (`data.wind.speed`). Each value is validated and appropriately displayed.
+ *
+ * @param {Object} data - The weather data object with properties for temperature, feels-like
+ *                        temperature, and wind speed.
+ * @throws Will throw an error if the provided data is undefined.
+ */
+const displayWeatherData = (data) => {
+  console.log(data);
+
+  if (!data) {
+    throw new Error("Data provided was undefined.");
+  }
+
+  const weather = {
+    temp: "---",
+    feelsLikeTemp: "---",
+    windSpeed: "---",
+  };
+
+  const temp = parseInt(data["main"]["temp"]);
+
+  if (!isNaN(temp)) {
+    weather["temp"] = temp;
+  }
+
+  const feelsLikeTemp = parseInt(data["main"]["feels_like"]);
+
+  if (!isNaN(feelsLikeTemp)) {
+    weather["feelsLikeTemp"] = feelsLikeTemp;
+  }
+
+  let windSpeed = data["wind"]["speed"];
+
+  if (windSpeed) {
+    if (!isNaN(windSpeed)) {
+      weather["windSpeed"] = windSpeed;
+    }
+  }
+
+  const weatherDiv = document.getElementById("weather");
+  weatherDiv.replaceChildren();
+
+  for (const key in weather) {
+    const p = document.createElement("p");
+    p.textContent = `${key}: ${weather[key]}`;
+    weatherDiv.appendChild(p);
+  }
 };

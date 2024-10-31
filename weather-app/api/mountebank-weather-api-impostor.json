@@ -1,0 +1,74 @@
+﻿{
+  "port": 4000,
+  "protocol": "http",
+  "stubs": [
+    {
+      "predicates": [
+        {
+          "and": [
+            { "equals": { "method": "GET", "path": "/data/2.5/weather" }, "caseSensitive": false },
+            { "equals": { "query": { "lat": 47.6038321, "lon": -122.330062, "units": "imperial", "appid": "123456" } }, "caseSensitive": false }
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            },
+            "body": {
+              "coord": {
+                "lon": -122.3291,
+                "lat": 47.5969
+              },
+              "weather": [
+                {
+                  "id": 803,
+                  "main": "Clouds",
+                  "description": "broken clouds",
+                  "icon": "04d"
+                }
+              ],
+              "base": "stations",
+              "main": {
+                "temp": 49.24,
+                "feels_like": 48.43,
+                "temp_min": 47.01,
+                "temp_max": 51.28,
+                "pressure": 1012,
+                "humidity": 82,
+                "sea_level": 1012,
+                "grnd_level": 1002
+              },
+              "visibility": 10000,
+              "wind": {
+                "speed": 3.44,
+                "deg": 200
+              },
+              "clouds": {
+                "all": 75
+              },
+              "dt": 1730400313,
+              "sys": {
+                "type": 2,
+                "id": 2041694,
+                "country": "US",
+                "sunrise": 1730386359,
+                "sunset": 1730422382
+              },
+              "timezone": -25200,
+              "id": 5809844,
+              "name": "Seattle",
+              "cod": 200
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
