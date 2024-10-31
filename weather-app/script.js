@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * @returns {string} The constructed URL for the Geocoding API request.
  */
 const buildGeoCodeUrl = (params) => {
-  return `http://api.openweathermap.org/geo/1.0/direct?q=${params.city},${params.state},${params.country}&limit=${params.limit}&appid=${params.apiKey}`;
+  return `http://localhost:4000/geo/1.0/direct?q=${params.city},${params.state},${params.country}&limit=${params.limit}&appid=${params.apiKey}`;
 };
 
 /**

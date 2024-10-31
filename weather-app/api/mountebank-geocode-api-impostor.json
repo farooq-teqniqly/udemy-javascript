@@ -1,0 +1,65 @@
+﻿{
+  "port": 4000,
+  "protocol": "http",
+  "stubs": [
+    {
+      "predicates": [
+        {
+          "and": [
+            { "equals": { "method": "GET", "path": "/geo/1.0/direct" }, "caseSensitive": false },
+            { "equals": { "query": { "q": "Seattle,WA,US", "limit": "1", "appid": "123456" } }, "caseSensitive": false }
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "is": {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization"
+            },
+            "body": [
+              {
+                "name": "Seattle",
+                "local_names": {
+                  "ja": "シアトル",
+                  "be": "Сіэтл",
+                  "zh": "西雅圖",
+                  "el": "Σιάτλ",
+                  "sr": "Сијетл",
+                  "af": "Seattle",
+                  "am": "ስያትል",
+                  "ar": "سياتيل، واشنطن",
+                  "lt": "Sietlas",
+                  "la": "Seattlum",
+                  "ru": "Сиэтл",
+                  "tt": "Сиэтл",
+                  "lv": "Sietla",
+                  "uk": "Сієтл",
+                  "ug": "Séatl",
+                  "bg": "Сиатъл",
+                  "br": "Seattle",
+                  "bs": "Seattle",
+                  "eo": "Seatlo",
+                  "oc": "Seattle",
+                  "ko": "시애틀",
+                  "fr": "Seattle",
+                  "en": "Seattle",
+                  "uz": "Sietl",
+                  "kn": "ಸಿಯಾಟಲ್"
+                },
+                "lat": 47.6038321,
+                "lon": -122.330062,
+                "country": "US",
+                "state": "Washington"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
