@@ -113,6 +113,22 @@ const getGeocode = (params) => {
 
   const url = buildGeoCodeUrl(params);
 
+  return fetchUrl(url);
+};
+
+/**
+ * Fetches data from a given URL and returns a JSON response.
+ *
+ * This function performs an HTTP GET request to the specified URL,
+ * checks for a successful response status (200), and then returns
+ * the JSON-parsed data. If the response status is not 200 or if
+ * any other error occurs, an error is thrown and logged to the console.
+ *
+ * @param {string} url - The URL to fetch data from.
+ * @returns {Promise<object>} A promise that resolves to the JSON-parsed response data.
+ * @throws {Error} If the request fails or the response status is not 200.
+ */
+const fetchUrl = (url) => {
   return fetch(url)
     .then((res) => {
       if (res.status !== 200) {
@@ -152,24 +168,7 @@ const getWeather = (params) => {
 
   const url = buildWeatherUrl(params);
 
-  return fetch(url)
-    .then((res) => {
-      if (res.status !== 200) {
-        console.error(res);
-        throw new Error(
-          `Could not get weather from weather service. Error: ${res.statusText}`,
-        );
-      }
-
-      return res.json();
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((error) => {
-      console.error(error);
-      throw new Error(error);
-    });
+  return fetchUrl(url);
 };
 
 /**
