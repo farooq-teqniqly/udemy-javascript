@@ -44,7 +44,7 @@ for (const configFile of configFiles) {
 
       return res.json();
     })
-    .then((_) => {
+    .then(() => {
       console.log("Successfully submitted Mountebank configuration");
     })
     .catch((error) => {
