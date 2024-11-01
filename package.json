@@ -2,6 +2,12 @@
   "devDependencies": {
     "dotenv": "^16.4.5",
     "mountebank": "^2.9.1",
+    "node-fetch": "^3.3.2",
     "prettier": "3.3.3"
+  },
+  "scripts": {
+    "start": "mb start",
+    "config-weather-apis": "node .\\weather-app\\api\\configure-mountebank.mjs",
+    "stop": "mb stop"
   }
 }
